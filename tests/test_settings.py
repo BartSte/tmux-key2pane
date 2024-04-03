@@ -1,4 +1,4 @@
-from key2pane import load_config
+from key2pane.settings import load_config
 from tests import paths
 
 

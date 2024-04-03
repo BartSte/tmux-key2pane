@@ -1,7 +1,9 @@
 import sys
 from argparse import ArgumentParser, Namespace
 
-from key2pane import Pane, load_config, make_parser, update_args
+from key2pane.cli import make_parser
+from key2pane.settings import load_config, make_settings
+from key2pane.tmux import Pane
 from tests import paths
 from tests.helpers import monkeypatch_tmux
 
@@ -51,7 +53,7 @@ def test_update_args(restore_argv, monkeypatch):
     old: Namespace = make_parser().parse_args()
     config: dict = load_config(paths.config)
     active_pane: Pane = Pane("foo", 0, 0)
-    new = update_args(old, active_pane, config)
+    new = make_settings(old, active_pane, config)
 
     assert new.config == old.config
     assert new.session == "foo"

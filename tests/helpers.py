@@ -10,4 +10,4 @@ def monkeypatch_tmux(monkeypatch):
         else:
             raise ValueError(f"Unknown command: {args}")
 
-    monkeypatch.setattr("key2pane.tmux", callback)
+    monkeypatch.setattr("key2pane.tmux.execute", callback)
