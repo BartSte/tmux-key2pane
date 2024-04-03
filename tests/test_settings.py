@@ -26,5 +26,13 @@ def test_settings_from_dicts():
 
 
 def test_settings_get_keys():
-    # TODO
-    pass
+    actions: list = [
+        {"regex": "foo", "keys": ["a", "b"]},
+        {"regex": "bar", "keys": ["c", "d"]},
+    ]
+    settings: Settings = Settings(0, 0, "foo", actions)
+
+    assert settings.regexes == ("foo", "bar")
+    assert settings.keys == (["a", "b"], ["c", "d"])
+    assert settings.get_keys("foo") == ["a", "b"]
+
