@@ -1,0 +1,16 @@
+{
+    "session": null,
+    "window": null,
+    "index": null,
+    "logfile": "log.log",
+    "loglevel": "DEBUG",
+    "actions": [
+        {
+            "command": "bash|zsh|fish",
+            "keys": [
+                "echo 'Hello, World!'",
+                "Enter"
+            ]
+        }
+    ]
+}

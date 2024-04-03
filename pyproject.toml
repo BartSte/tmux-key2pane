@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["*"]  # package names should match these glob patterns (["*"] by default)
+
+[project]
+name = "key2pane"
+authors = [ {name = "BartSte"} ]
+description = "Send keys to any tmux pane"
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["tmux", "key", "send", "pane", "keys", "send-keys", "send-keys-to-pane", "send-keys-to-pane"]
+license = {text = "MIT License"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = []
+version = "0.0.0"
+
+[project.optional-dependencies]
+debug = ["ipdb", "ipython"]
+test = ["pytest"]
+
+[project.scripts]
+foo = "key2pane:main"
+
+[tool.pyright]
+include = [".", "test"]
+exclude = [
+    "**/__pycache__",
+    ".git",
+    ".pytest_cache",
+    "extras",
+]
+ignore = []
+defineConstant = {}
+stubPath = "stubs"
+venvPath = ".venv"
+
+reportMissingImports = true
+reportMissingTypeStubs = false
+
+pythonVersion = "3.11"
+pythonPlatform = "Linux"
+
+[tool.ruff]
+line-length = 79
+
+select = [
+    "F",  # pyflakes
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "I",  # isort
+    "N",  # PEP8 naming
+    "D",  # pydocstyle
+]
+
+ignore = ["D212", "D205", "D210", "D203"]
+
+[tool.autopep8]
+max_line_length = 79
+aggressive = 3
+experimental = true
+
+[tool.pytest.ini_options]
+addopts = "-s -rA --log-level INFO"
+pythonpath = [
+  "."
+]
+testpaths = [
+    "tests"
+]
+
+[tool.ipdb]
+context = 9
+
