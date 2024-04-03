@@ -20,6 +20,30 @@ class Pane:
         self._index: int = index
         self._command: str = self._find_command()
 
+    @property
+    def session(self) -> str:
+        return self._session
+
+    @property
+    def window(self) -> int:
+        return self._window
+
+    @property
+    def index(self) -> int:
+        return self._index
+
+    @property
+    def command(self) -> str:
+        return self._command
+
+    def as_dict(self) -> dict[str, str | int]:
+        return {
+            "session": self.session,
+            "window": self.window,
+            "index": self.index,
+            "command": self.command,
+        }
+
     @classmethod
     def from_active(cls) -> "Pane":
         stdout: str = execute(
@@ -51,22 +75,6 @@ class Pane:
 
         logging.error("Current pane not found in %s", index_vs_commands)
         return ""
-
-    @property
-    def session(self) -> str:
-        return self._session
-
-    @property
-    def window(self) -> int:
-        return self._window
-
-    @property
-    def index(self) -> int:
-        return self._index
-
-    @property
-    def command(self) -> str:
-        return self._command
 
     def __repr__(self) -> str:
         return (
