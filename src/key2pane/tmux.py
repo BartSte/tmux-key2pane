@@ -44,6 +44,9 @@ class Pane:
             "command": self.command,
         }
 
+    def send(self, keys: list[str]) -> None:
+        pass
+
     @classmethod
     def from_active(cls) -> "Pane":
         stdout: str = execute(

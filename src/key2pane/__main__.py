@@ -1,5 +1,4 @@
 import logging
-import sys
 from argparse import Namespace
 
 from key2pane.cli import make_parser, set_logging
@@ -7,12 +6,14 @@ from key2pane.settings import Settings, load_config
 from key2pane.tmux import Pane
 
 
-def main():
+def main() -> int:
     try:
         _main()
-    except Exception as error:
-        logging.critical(error)
-        sys.exit(1)
+    except Exception as e:
+        logging.critical("%s: %s", type(e).__name__, e, exc_info=True)
+        return 1
+    else:
+        return 0
 
 
 def _main():
@@ -31,10 +32,13 @@ def _main():
     )
     logging.debug("Settings: %s", settings)
 
-    destination_pane: Pane = Pane(
-        settings.session, settings.window, settings.index
-    )
-    logging.info("Destination pane: %s", destination_pane)
+    target_pane: Pane = Pane(settings.session, settings.window, settings.index)
+    logging.info("Target pane: %s", target_pane)
+
+    keys: list[str] = settings.get_keys(target_pane.command)
+    # TODO: populate the placeholder with the cli args
+    target_pane.send(keys)
+    logging.info("Sent keys: %s", keys)
 
 
 if __name__ == "__main__":

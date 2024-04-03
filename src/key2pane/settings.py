@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 from dataclasses import dataclass
 from os.path import exists
 from typing import Any
@@ -20,6 +21,41 @@ class Settings:
     window: int
     session: str
     actions: list[dict[str, str | list[str]]]
+
+    def get_keys(self, command: str) -> list[str]:
+        matches: tuple[bool, ...] = tuple(
+            bool(re.match(regex, command)) for regex in self.regexes
+        )
+
+        number_of_matches: int = sum(matches)
+        if number_of_matches == 0:
+            logging.warning("No action found for command %s", command)
+            return []
+        elif number_of_matches > 1:
+            logging.warning(
+                "Multiple actions found for command %s, returning none of them",
+                command,
+            )
+            return []
+        else:
+            logging.debug("Action found for command %s", command)
+            return self.keys[matches.index(True)]
+
+    @property
+    def regexes(self) -> tuple[str, ...]:
+        return tuple(
+            action["regex"]
+            for action in self.actions
+            if isinstance(action["regex"], str)
+        )
+
+    @property
+    def keys(self) -> tuple[list[str], ...]:
+        return tuple(
+            action["keys"]
+            for action in self.actions
+            if isinstance(action["keys"], list)
+        )
 
     @classmethod
     def from_dicts(cls, *dicts: dict[str, Any]) -> "Settings":

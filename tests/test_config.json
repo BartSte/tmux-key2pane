@@ -6,9 +6,16 @@
     "loglevel": "DEBUG",
     "actions": [
         {
-            "command": "bash|zsh|fish",
+            "regex": "bash|zsh|fish",
             "keys": [
                 "echo 'Hello, World!'",
+                "Enter"
+            ]
+        },
+        {
+            "regex": "python[0-9]*",
+            "keys": [
+                "print('Hello, World!')",
                 "Enter"
             ]
         }

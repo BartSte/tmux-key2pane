@@ -23,3 +23,8 @@ def test_settings_from_dicts():
     assert settings.window == 0
     assert settings.session == "foo"
     assert settings.actions == config["actions"]
+
+
+def test_settings_get_keys():
+    # TODO
+    pass
