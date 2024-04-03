@@ -13,7 +13,15 @@ Sends a sequence of keys to any tmux pane, based on the pane's current command.
 Which keys to send, must be specified in a json with the following format:
 
 {
-    "bash|zsh|fish": ["echo hello_world", "Enter"],
+  "actions": [
+    {
+      "command": "bash|zsh|fish",
+      "keys": ["echo 'Hello, World!'", "Enter"]
+    }
+  ],
+
+  // other configurations
+
 }
 
 here, the key is the regex that will be matched against the current pane's

@@ -25,10 +25,10 @@ debug = ["ipdb", "ipython"]
 test = ["pytest"]
 
 [project.scripts]
-foo = "key2pane:main"
+key2pane_ = "key2pane:main"
 
 [tool.pyright]
-include = [".", "test"]
+include = ["src", "tests"]
 exclude = [
     "**/__pycache__",
     ".git",
