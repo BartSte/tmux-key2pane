@@ -6,6 +6,11 @@ from os.path import exists
 from typing import Any
 
 
+class IncompleteSettingsError(Exception):
+    """Raised when a Settings object is missing one or more required
+    attributes."""
+
+
 def load_config(path: str) -> dict:
     if not exists(path):
         logging.warning("Config file not found at %s", path)
@@ -91,4 +96,6 @@ class Settings:
         keys: set[str] = set(kwargs.keys())
         if keys != cls.attributes():
             missing: set[str] = cls.attributes() - keys
-            raise ValueError(f"Missing the following settings: {missing}")
+            raise IncompleteSettingsError(
+                f"Missing the following settings: {missing}"
+            )

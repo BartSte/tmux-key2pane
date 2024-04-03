@@ -2,15 +2,16 @@ import logging
 from argparse import Namespace
 
 from key2pane.cli import make_parser, set_logging
-from key2pane.settings import Settings, load_config
+from key2pane.settings import IncompleteSettingsError, Settings, load_config
 from key2pane.tmux import Pane
 
 
 def main() -> int:
     try:
         _main()
-    except Exception as e:
-        logging.critical("%s: %s", type(e).__name__, e, exc_info=True)
+    except Exception as error:
+        exc_info: bool = not isinstance(error, IncompleteSettingsError)
+        logging.critical(error, exc_info=exc_info)
         return 1
     else:
         return 0
