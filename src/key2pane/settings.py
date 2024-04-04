@@ -6,15 +6,14 @@ from os.path import exists
 from typing import Any
 
 
-class IncompleteSettingsError(Exception):
-    """Raised when a Settings object is missing one or more required
-    attributes."""
+class SettingsError(Exception):
+    """Raised when an error occurs while handling settings."""
 
 
 def load_config(path: str) -> dict:
     if not exists(path):
         logging.warning("Config file not found at %s", path)
-        return {}
+        raise SettingsError("Config file not found")
 
     with open(path) as file:
         return json.load(file)
@@ -26,6 +25,7 @@ class Settings:
     window: int
     session: str
     actions: list[dict[str, str | list[str]]]
+    positional: list[str]
 
     def get_keys(self, command: str) -> list[str]:
         matches: tuple[bool, ...] = tuple(
@@ -34,17 +34,25 @@ class Settings:
 
         number_of_matches: int = sum(matches)
         if number_of_matches == 0:
-            logging.warning("No action found for command %s", command)
-            return []
+            raise SettingsError(f"No action found for command {command}")
+
         elif number_of_matches > 1:
-            logging.warning(
-                "Multiple actions found for command %s, returning none of them",
-                command,
+            raise SettingsError(
+                f"Multiple actions found for command {command}"
             )
-            return []
+
         else:
             logging.debug("Action found for command %s", command)
-            return self.keys[matches.index(True)]
+            return self._fill_placeholders(self.keys[matches.index(True)])
+
+    def _fill_placeholders(self, keys: list[str]) -> list[str]:
+        try:
+            return [key.format(*self.positional) for key in keys]
+        except IndexError as error:
+            raise SettingsError(
+                "Not enough positional arguments to fill placeholders of the "
+                f"keys: {keys}"
+            ) from error
 
     @property
     def regexes(self) -> tuple[str, ...]:
@@ -64,7 +72,8 @@ class Settings:
 
     @classmethod
     def from_dicts(cls, *dicts: dict[str, Any]) -> "Settings":
-        """Create a Settings object from a tuple of dictionaries.
+        """
+        Create a Settings object from a tuple of dictionaries.
 
         The order of the dictionaries determines the precedence of values. The
         first dictionary has the lowest precedence, the last dictionary the
@@ -73,9 +82,10 @@ class Settings:
         value is None, it will not be used.
 
         Args:
-            args:
+            *dicts: Tuple of dictionaries.
 
         Returns:
+            Settings object.
 
         """
         kwargs: dict[str, Any] = {
@@ -96,6 +106,6 @@ class Settings:
         keys: set[str] = set(kwargs.keys())
         if keys != cls.attributes():
             missing: set[str] = cls.attributes() - keys
-            raise IncompleteSettingsError(
+            raise SettingsError(
                 f"Missing the following settings: {missing}"
             )

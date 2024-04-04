@@ -2,19 +2,15 @@ import sys
 from argparse import ArgumentParser, Namespace
 
 from key2pane.cli import make_parser
-from key2pane.settings import load_config
-from key2pane.tmux import Pane
-from tests import paths
-from tests.helpers import monkeypatch_tmux
 
 
 def test_make_parser_defaults(restore_argv):
     sys.argv = ["key2pane", "Hello", "Enter"]
     parser: ArgumentParser = make_parser()
     args: Namespace = parser.parse_args()
-    fields: list[str] = ["config", "logfile", "loglevel", "keys"]
+    fields: list[str] = ["config", "logfile", "loglevel", "positional"]
     assert all(hasattr(args, field) for field in fields)
-    assert args.keys == ["Hello", "Enter"]
+    assert args.positional == ["Hello", "Enter"]
 
 
 def test_make_parser_options(restore_argv):
@@ -44,4 +40,4 @@ def test_make_parser_options(restore_argv):
     assert args.index == 1
     assert args.logfile == "log.log"
     assert args.loglevel == "DEBUG"
-    assert args.keys == ["Hello", "Enter"]
+    assert args.positional == ["Hello", "Enter"]

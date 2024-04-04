@@ -1,7 +1,6 @@
-import json
 import logging
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from os.path import exists, expanduser
+from os.path import expanduser
 
 _DESCRIPTION: str = """
 Sends a sequence of keys to any tmux pane, based on the pane's current command.
@@ -84,7 +83,19 @@ def make_parser() -> ArgumentParser:
         help="Specify the log level",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
     )
-    parser.add_argument("keys", nargs="*", help="The keys to send to the pane")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Do not send the keys, just print the command to stdout instead",
+    )
+    parser.add_argument(
+        "positional",
+        nargs="*",
+        help=(
+            "Positional arguments that will be inserted in '{}' placeholders "
+            "in the send keys"
+        ),
+    )
     return parser
 
 
@@ -99,5 +110,3 @@ def set_logging(loglevel: str, logfile: str) -> None:
     file_handler: logging.FileHandler = logging.FileHandler(logfile)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
-
-

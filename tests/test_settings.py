@@ -15,7 +15,12 @@ def test_load_config():
 def test_settings_from_dicts():
     active_pane: dict = {"index": 0, "window": 0, "session": "baz"}
     config: dict = load_config(paths.config)
-    args: dict = {"index": None, "window": None, "session": "foo"}
+    args: dict = {
+        "index": None,
+        "window": None,
+        "session": "foo",
+        "positional": ["foo", "bar"],
+    }
 
     settings: Settings = Settings.from_dicts(active_pane, config, args)
 
@@ -23,6 +28,7 @@ def test_settings_from_dicts():
     assert settings.window == 0
     assert settings.session == "foo"
     assert settings.actions == config["actions"]
+    assert settings.positional == ["foo", "bar"]
 
 
 def test_settings_get_keys():
@@ -30,9 +36,8 @@ def test_settings_get_keys():
         {"regex": "foo", "keys": ["a", "b"]},
         {"regex": "bar", "keys": ["c", "d"]},
     ]
-    settings: Settings = Settings(0, 0, "foo", actions)
+    settings: Settings = Settings(0, 0, "foo", actions, [""])
 
     assert settings.regexes == ("foo", "bar")
     assert settings.keys == (["a", "b"], ["c", "d"])
     assert settings.get_keys("foo") == ["a", "b"]
-
