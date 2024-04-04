@@ -3,17 +3,19 @@ import subprocess
 from typing import Generator
 
 
+class TmuxError(Exception):
+    """Raised when a tmux command fails."""
+
+
 def execute(*args) -> str:
     try:
         return subprocess.check_output(["tmux", *args]).decode("utf-8").strip()
     except subprocess.CalledProcessError as error:
         logging.critical(error.output.decode("utf-8"))
-        raise
+        raise TmuxError(f"tmux {' '.join(args)} failed") from error
 
 
 class Pane:
-    SEP: str = ":"
-
     def __init__(self, session: str, window: int, index: int):
         self._session: str = session
         self._window: int = window
@@ -44,22 +46,25 @@ class Pane:
             "command": self.command,
         }
 
-    def send(self, keys: list[str]) -> None:
-        pass
+    def send(self, keys: list[str], dry_run: bool = False):
+        cmd: tuple[str, ...] = ("send-keys", "-t", str(self), *keys)
+        if dry_run:
+            logging.warning("Pane.send dry-run")
+            print("tmux", *cmd)
+        else:
+            execute(*cmd)
 
     @classmethod
     def from_active(cls) -> "Pane":
-        stdout: str = execute(
-            "display-message", "-p", f"#S{cls.SEP}#I{cls.SEP}#P"
-        )
-        session, window, pane = stdout.split(cls.SEP)
+        stdout: str = execute("display-message", "-p", "#S:#I:#P")
+        session, window, pane = stdout.split(":")
         return cls(session, int(window), int(pane))
 
     def _find_command(self) -> str:
         stdout: str = execute(
             "list-panes",
             "-t",
-            f"{self.session}{self.SEP}{self.window}",
+            f"{self.session}:{self.window}",
             "-F",
             "#{pane_index}:#{pane_current_command}",
         )
@@ -79,14 +84,8 @@ class Pane:
         logging.error("Current pane not found in %s", index_vs_commands)
         return ""
 
-    def __repr__(self) -> str:
-        return (
-            f"{self.session}{self.SEP}{self.window}{self.SEP}{self.index}"
-            f"{self.SEP}{self.command}"
-        )
-
     def __str__(self) -> str:
-        return self.__repr__()
+        return f"{self.session}:{self.window}.{self.index}"
 
     def __eq__(self, other: object) -> bool:
         return str(self) == str(other)
