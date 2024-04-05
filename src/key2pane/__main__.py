@@ -1,4 +1,5 @@
 import logging
+import sys
 from argparse import Namespace
 
 from key2pane.cli import make_parser, set_logging
@@ -7,6 +8,14 @@ from key2pane.tmux import Pane, TmuxError
 
 
 def main() -> int:
+    """Entry point for key2pane.
+
+    It catches exceptions defined in this module and logs them as errors.
+    Unexpected exceptions are logged as critical and the traceback is included.
+
+    Returns:
+        0 if successful, 1 if an error occurred.
+    """
     try:
         _main()
     except (SettingsError, TmuxError) as error:
@@ -20,6 +29,7 @@ def main() -> int:
 
 
 def _main():
+    """Entry point for key2pane."""
     args: Namespace = make_parser().parse_args()
     set_logging(args.loglevel, args.logfile)
     logging.debug("Arguments: %s", args)
@@ -40,12 +50,12 @@ def _main():
 
     keys: list[str] = settings.get_keys(target_pane.command)
     if args.dry_run:
-        logging.warning("Dry run: Not sending keys")
+        logging.warning("Dry run; not sending keys")
         print(*keys)
     else:
-        target_pane.send(keys)
         logging.info("Sent keys: %s", keys)
+        target_pane.send(keys)
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

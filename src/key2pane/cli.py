@@ -10,39 +10,43 @@ Sends a sequence of keys to any tmux pane, based on the pane's current command.
 Which keys to send, must be specified in a json with the following format:
 
 {
-  "actions": [
-    {
-      "command": "bash|zsh|fish",
-      "keys": ["echo 'Hello, World!'", "Enter"]
-    }
-  ],
+    // Other settings ...
 
-  // other configurations
-
+    "actions": [
+        {
+            "regex": "bash|zsh|fish",
+            "keys": [
+                "echo 'Hello, World!'",
+                "Enter"
+            ]
+        }
+    ]
 }
 
-here, the key is the regex that will be matched against the current pane's
-command. The value is an array of arguments that will be applied to the `tmux
-send-keys` command. In the example above, if the current pane is running bash,
-zsh, or fish, then the command `echo hello_world` will be sent to the pane.
-Finally the command `Enter` will be sent to the pane, which has a special effect
-for the `tmux send-keys` command, as it will simulate pressing the Enter key,
-instead of literally typing the word Enter.
+The the regex will be matched against the current pane's command. The `keys` is
+an array of arguments that will be applied to the `tmux send-keys` command. In
+the example above, if the current pane is running bash, zsh, or fish, then the
+command `echo 'Hello, World!'` will be sent to the pane. Finally the command
+`Enter` will be sent to the pane, which has a special effect for the `tmux
+send-keys` command, as it will simulate pressing the Enter key, instead of
+literally typing the word Enter.
 
 The positional arguments passed to this script can be used to populate
 placeholders in the json values. The placeholders are curly braces with an
 optional number inside, where the number indicates which argument to use,
-starting from 1. So {1} will be replaced by the first argument, {2} by the
-second, and so on. If no number is provided, all the arguments will be used. For
-example, if the command is: `key2pane foo bar`, and the json value is: `echo {1}
-{2}`, then the following keys will be sent to the pane: `echo foo bar`.
-
-The curly braces can be escaped by using a backslash. For example, {1} will be
-replaced by {1}, and not by the first argument.
+starting from 0. For example, if the we invoke: `key2pane foo bar`, and the
+`keys` array is `["echo {1} {2}", "Enter"]`, then the following keys will be
+sent to the pane: `echo foo bar`, `Enter`. Python's `str.format` is used under
+the hood, so more information can be found in the official documentation.
 """
 
 
 def make_parser() -> ArgumentParser:
+    """Return an ArgumentParser for key2pane.
+
+    Returns:
+        An ArgumentParser for key2pane.
+    """
     parser: ArgumentParser = ArgumentParser(
         description=_DESCRIPTION, formatter_class=RawDescriptionHelpFormatter
     )

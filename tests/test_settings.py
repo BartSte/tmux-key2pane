@@ -1,4 +1,5 @@
 from key2pane.settings import Settings, load_config
+
 from tests import paths
 
 
@@ -39,5 +40,5 @@ def test_settings_get_keys():
     settings: Settings = Settings(0, 0, "foo", actions, [""])
 
     assert settings.regexes == ("foo", "bar")
-    assert settings.keys == (["a", "b"], ["c", "d"])
+    assert settings.all_keys == (["a", "b"], ["c", "d"])
     assert settings.get_keys("foo") == ["a", "b"]

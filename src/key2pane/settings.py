@@ -11,6 +11,17 @@ class SettingsError(Exception):
 
 
 def load_config(path: str) -> dict:
+    """Return the contents of a json file at `path` as a dictionary.
+
+    Args:
+        path: the path to the json file.
+
+    Raises:
+        SettingsError: when the file is not found or invalid.
+
+    Returns:
+        The contents of the json file as a dictionary.
+    """
     if not exists(path):
         logging.warning("Config file not found at %s", path)
         raise SettingsError("Config file not found")
@@ -25,6 +36,16 @@ def load_config(path: str) -> dict:
 
 @dataclass
 class Settings:
+    """Dataclass for settings.
+
+    Attributes:
+        index: the index of the pane.
+        window: the window of the pane.
+        session: the session of the pane.
+        actions: the keys to send based on the pane's command.
+        positional: the positional arguments passed to the script.
+    """
+
     index: int
     window: int
     session: str
@@ -32,6 +53,17 @@ class Settings:
     positional: list[str]
 
     def get_keys(self, command: str) -> list[str]:
+        """Return the keys to send based on the `command`.
+
+        Args:
+            command: the name of the command.
+
+        Raises:
+            SettingsError: when no action is found or multiple actions are found.
+
+        Returns:
+            The keys to send.
+        """
         matches: tuple[bool, ...] = tuple(
             bool(re.match(regex, command)) for regex in self.regexes
         )
@@ -47,9 +79,10 @@ class Settings:
 
         else:
             logging.debug("Action found for command %s", command)
-            return self._fill_placeholders(self.keys[matches.index(True)])
+            keys: list[str] = self.all_keys[matches.index(True)]
+            return self._format_keys(keys)
 
-    def _fill_placeholders(self, keys: list[str]) -> list[str]:
+    def _format_keys(self, keys: list[str]) -> list[str]:
         try:
             return [key.format(*self.positional) for key in keys]
         except IndexError as error:
@@ -60,6 +93,11 @@ class Settings:
 
     @property
     def regexes(self) -> tuple[str, ...]:
+        """All regexes to match against the pane's command.
+
+        Returns:
+            A tuple of regexes.
+        """
         return tuple(
             action["regex"]
             for action in self.actions
@@ -67,7 +105,12 @@ class Settings:
         )
 
     @property
-    def keys(self) -> tuple[list[str], ...]:
+    def all_keys(self) -> tuple[list[str], ...]:
+        """All lists of keys that could be sent to a pane.
+
+        Returns:
+            a tuple of lists of keys.
+        """
         return tuple(
             action["keys"]
             for action in self.actions
@@ -103,10 +146,23 @@ class Settings:
 
     @classmethod
     def attributes(cls) -> set[str]:
+        """All attributes of the dataclass.
+
+        Returns:
+            A set of strings representing the attributes.
+        """
         return set(cls.__dataclass_fields__.keys())
 
     @classmethod
     def _assert_keys(cls, kwargs: dict[str, Any]) -> None:
+        """Raise a SettingsError if the keys are not the same as the attributes.
+
+        Args:
+            kwargs: the keys to check.
+
+        Raises:
+            SettingsError: when the keys are not the same as the attributes.
+        """
         keys: set[str] = set(kwargs.keys())
         if keys != cls.attributes():
             missing: set[str] = cls.attributes() - keys
