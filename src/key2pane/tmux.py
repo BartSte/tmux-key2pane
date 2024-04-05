@@ -46,13 +46,8 @@ class Pane:
             "command": self.command,
         }
 
-    def send(self, keys: list[str], dry_run: bool = False):
-        cmd: tuple[str, ...] = ("send-keys", "-t", str(self), *keys)
-        if dry_run:
-            logging.warning("Pane.send dry-run")
-            print("tmux", *cmd)
-        else:
-            execute(*cmd)
+    def send(self, keys: list[str]) -> str:
+        return execute("send-keys", "-t", str(self), *keys)
 
     @classmethod
     def from_active(cls) -> "Pane":

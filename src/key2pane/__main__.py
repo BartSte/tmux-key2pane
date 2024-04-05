@@ -39,8 +39,12 @@ def _main():
     logging.info("Target pane: %s", target_pane)
 
     keys: list[str] = settings.get_keys(target_pane.command)
-    target_pane.send(keys, dry_run=args.dry_run)
-    logging.info("Sent keys: %s", keys)
+    if args.dry_run:
+        logging.warning("Dry run: Not sending keys")
+        print(*keys)
+    else:
+        target_pane.send(keys)
+        logging.info("Sent keys: %s", keys)
 
 
 if __name__ == "__main__":

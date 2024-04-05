@@ -16,7 +16,11 @@ def load_config(path: str) -> dict:
         raise SettingsError("Config file not found")
 
     with open(path) as file:
-        return json.load(file)
+        try:
+            return json.load(file)
+        except json.JSONDecodeError as error:
+            logging.error(error)
+            raise SettingsError("Invalid config file") from error
 
 
 @dataclass
@@ -106,6 +110,4 @@ class Settings:
         keys: set[str] = set(kwargs.keys())
         if keys != cls.attributes():
             missing: set[str] = cls.attributes() - keys
-            raise SettingsError(
-                f"Missing the following settings: {missing}"
-            )
+            raise SettingsError(f"Missing the following settings: {missing}")
