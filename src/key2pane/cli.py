@@ -1,6 +1,8 @@
 import logging
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-from os.path import expanduser
+from logging.handlers import TimedRotatingFileHandler
+from os import makedirs
+from os.path import dirname, expanduser
 
 _DESCRIPTION: str = """
 Sends a sequence of keys to any tmux pane, based on the pane's current command.
@@ -74,7 +76,7 @@ def make_parser() -> ArgumentParser:
     )
     parser.add_argument(
         "--logfile",
-        default=expanduser("~/.local/state/key2pane.log"),
+        default=expanduser("~/.local/state/key2pane/key2pane.log"),
         help="Specify the log file",
     )
     parser.add_argument(
@@ -99,7 +101,17 @@ def make_parser() -> ArgumentParser:
     return parser
 
 
-def set_logging(loglevel: str, logfile: str) -> None:
+def set_logging(loglevel: str, logfile: str, store_days: int = 7) -> None:
+    """Set the root logger to the `loglevel` and add a file handler to
+    `logfile`. Logs older than `store_days` will be deleted.
+
+    Args:
+        loglevel: The log level.
+        logfile: The path to the log file.
+        store_days: The number of days to keep the logs.
+    """
+    makedirs(dirname(logfile), exist_ok=True)
+
     logging.debug("Initializing logging by printing this message")
     logger: logging.Logger = logging.getLogger()
     logger.setLevel(loglevel)
@@ -107,6 +119,10 @@ def set_logging(loglevel: str, logfile: str) -> None:
     formatter: logging.Formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
-    file_handler: logging.FileHandler = logging.FileHandler(logfile)
+    file_handler: TimedRotatingFileHandler = TimedRotatingFileHandler(
+        logfile, when="D", interval=1, backupCount=store_days
+    )
+
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    logging.debug("Logging initialized")
