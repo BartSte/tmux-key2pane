@@ -8,17 +8,14 @@ Sends a sequence of keys to any tmux pane, based on the pane's current command.
 
 <!--toc:start-->
 
-- [key2pane](#key2pane)
-  - [Contents](#contents)
-  - [Introduction](#introduction)
-  - [Installation](#installation)
-    - [Install using pip](#install-using-pip)
-    - [Install manually](#install-manually)
-  - [Usage](#usage)
-  - [Configuration](#configuration)
-  - [Troubleshooting](#troubleshooting)
-  - [Contributing](#contributing)
-  - [License](#license)
+- [Contents](#contents)
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
 
 <!--toc:end-->
 
