@@ -1,5 +1,7 @@
 # key2pane
 
+[![Tests](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml/badge.svg)](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml)  
+
 Sends a sequence of keys to any tmux pane, based on the pane's current command.
 
 ## Contents
