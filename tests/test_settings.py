@@ -1,5 +1,4 @@
 from key2pane.settings import Settings, load_config
-
 from tests import paths
 
 
@@ -8,6 +7,7 @@ def test_load_config():
     assert config.get("session") is None
     assert config.get("window") is None
     assert config.get("index") is None
+    assert config.get("reset") is False
     assert config.get("loglevel") == "DEBUG"
     assert config.get("logfile") == "log.log"
     assert isinstance(config.get("actions"), list)
@@ -37,7 +37,7 @@ def test_settings_get_keys():
         {"regex": "foo", "keys": ["a", "b"]},
         {"regex": "bar", "keys": ["c", "d"]},
     ]
-    settings: Settings = Settings(0, 0, "foo", actions, [""])
+    settings: Settings = Settings(0, 0, "foo", False, actions, [""])
 
     assert settings.regexes == ("foo", "bar")
     assert settings.all_keys == (["a", "b"], ["c", "d"])

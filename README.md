@@ -1,6 +1,6 @@
 # key2pane
 
-[![Tests](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml/badge.svg)](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml)  
+[![Tests](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml/badge.svg)](https://github.com/BartSte/tmux-key2pane/actions/workflows/test.yml)
 
 Sends a sequence of keys to any tmux pane, based on the pane's current command.
 
@@ -98,6 +98,7 @@ is exists yet. You need to create a configuration file in the default location
   "session": null,
   "window": null,
   "index": null,
+  "reset": false,
   "logfile": null,
   "loglevel": null,
   "actions": [
@@ -118,6 +119,7 @@ Since comments are not allowed in JSON, notes are placed here:
 - **session**: the session name. Default: current session.
 - **window**: the window index. Default: current window.
 - **index**: the pane index. Default: current pane.
+- **reset**: send a Ctrl-C before sending the keys. Default: false
 - **logfile**: the log file. Default: ~/.local/state/key2pane/key2pane.log
 - **loglevel**: the log level. Default: WARNING
 - **actions**: a list of actions, containing a `regex`, and a `keys` property.

@@ -8,7 +8,13 @@ def test_make_parser_defaults(restore_argv):
     sys.argv = ["key2pane", "Hello", "Enter"]
     parser: ArgumentParser = make_parser()
     args: Namespace = parser.parse_args()
-    fields: list[str] = ["config", "logfile", "loglevel", "positional"]
+    fields: list[str] = [
+        "config",
+        "logfile",
+        "loglevel",
+        "positional",
+        "reset",
+    ]
     assert all(hasattr(args, field) for field in fields)
     assert args.positional == ["Hello", "Enter"]
 
@@ -28,6 +34,7 @@ def test_make_parser_options(restore_argv):
         "log.log",
         "--loglevel",
         "DEBUG",
+        "--reset",
         "Hello",
         "Enter",
     ]
@@ -38,6 +45,7 @@ def test_make_parser_options(restore_argv):
     assert args.session == "foo"
     assert args.window == 0
     assert args.index == 1
+    assert args.reset is True
     assert args.logfile == "log.log"
     assert args.loglevel == "DEBUG"
     assert args.positional == ["Hello", "Enter"]

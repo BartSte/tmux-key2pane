@@ -103,8 +103,13 @@ class Pane:
             "command": self.command,
         }
 
-    def send(self, keys: list[str]) -> str:
+    def send(self, keys: list[str], reset: bool = True) -> str:
         """Send keys to the pane.
+
+        If reset is True, the keys are sent after sending a C-c to the pane.
+        This is done separately as sending it together with other keys does not
+        work smoothly when vim bindings are used on the command line of
+        bash/zsh.
 
         Args:
             keys: the keys to send.
@@ -112,7 +117,13 @@ class Pane:
         Returns:
             stdout of the tmux command which is typically empty.
         """
-        return execute("send-keys", "-t", str(self), *keys)
+        cmd: tuple[str, ...] = ("send-keys", "-t", str(self))
+        if reset:
+            logging.debug("Resetting pane by sending C-c")
+            execute(*cmd, "C-c")
+
+        logging.info("Sent keys: %s", keys)
+        return execute(*cmd, *keys)
 
     @classmethod
     def from_active(cls) -> "Pane":

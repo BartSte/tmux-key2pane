@@ -66,17 +66,22 @@ def make_parser() -> ArgumentParser:
         "-w",
         "--window",
         type=int,
-        help="Specify the tmux window. If not provided, the KEY2PANE_WINDOW "
-        "environment variable will be used, if not set, the current window will"
+        help="Specify the tmux window. If not provided, the window specified by"
+        "config file will be used. if not set, the current window will"
         " be used.",
     )
     parser.add_argument(
         "-i",
         "--index",
         type=int,
-        help="Specify the tmux pane index. If not provided, the KEY2PANE_PANE "
-        "environment variable will be used, if not set, the current pane its "
-        "index will be used.",
+        help="Specify the tmux pane index. If not provided, the value of the "
+        "config file will be used. if not set, the current pane its index will "
+        "be used.",
+    )
+    parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="Send a C-c before sending the keys",
     )
     parser.add_argument(
         "--logfile",

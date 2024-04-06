@@ -49,6 +49,7 @@ class Settings:
     index: int
     window: int
     session: str
+    reset: bool
     actions: list[dict[str, str | list[str]]]
     positional: list[str]
 
@@ -135,6 +136,8 @@ class Settings:
             Settings object.
 
         """
+        # TODO: when the config sets the reset value to True, and it is not
+        # given by the cli. The cli sets it back to false....
         kwargs: dict[str, Any] = {
             key: value
             for dictionary in dicts

@@ -1,6 +1,8 @@
 import logging
 import sys
 from argparse import Namespace
+from copy import copy
+from pprint import pformat
 
 from key2pane.cli import make_parser, set_logging
 from key2pane.settings import Settings, SettingsError, load_config
@@ -32,19 +34,9 @@ def _main():
     """Entry point for key2pane."""
     args: Namespace = make_parser().parse_args()
     set_logging(args.loglevel, args.logfile)
-    logging.debug("Arguments: %s", args)
+    logging.debug("Arguments:\n%s", pformat(vars(args)))
 
-    active_pane: Pane = Pane.from_active()
-    logging.debug("Active pane: %s", active_pane)
-
-    config: dict = load_config(args.config)
-    logging.debug("Config: %s", config)
-
-    settings: Settings = Settings.from_dicts(
-        active_pane.as_dict(), config, vars(args)
-    )
-    logging.debug("Settings: %s", settings)
-
+    settings: Settings = make_settings(args)
     target_pane: Pane = Pane(settings.session, settings.window, settings.index)
     logging.info("Target pane: %s", target_pane)
 
@@ -53,8 +45,40 @@ def _main():
         logging.warning("Dry run; not sending keys")
         print(*keys)
     else:
-        logging.info("Sent keys: %s", keys)
-        target_pane.send(keys)
+        target_pane.send(keys, settings.reset)
+
+
+def make_settings(args: Namespace) -> Settings:
+    """Return a Settings object based on the command line arguments, and the
+    config file.
+
+    Args:
+        args: the command line arguments.
+
+    Returns:
+        the settings.
+    """
+    active_pane: Pane = Pane.from_active()
+    defaults: dict = copy(vars(args))
+    defaults.update(active_pane.as_dict())
+
+    config: dict = load_config(args.config)
+
+    overrides: dict = dict(
+        session=args.session, window=args.window, index=args.index
+    )
+
+    settings: Settings = Settings.from_dicts(defaults, config, overrides)
+    logging.debug(
+        "Active pane:\n%s\n\nDefaults:\n%s\n\nConfig:\n%s\n\nOverrides:\n%s"
+        "\n\nSettings:\n%s\n",
+        active_pane,
+        pformat(defaults),
+        pformat(config),
+        pformat(overrides),
+        pformat(settings),
+    )
+    return settings
 
 
 if __name__ == "__main__":
