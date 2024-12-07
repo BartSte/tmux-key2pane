@@ -4,6 +4,13 @@
 
 Sends a sequence of keys to any tmux pane, based on the pane's current command.
 
+## TODO:
+
+- When running `key2pane` from the cli, it treats the current pane as `python`
+  instead of the shell. This may be expected, but is confusing for the user.
+- When enabling --reset from the cli nothing happens. When enabling it from the
+  config file, it results in a KeyboardInterrupt.
+
 ## Contents
 
 <!--toc:start-->
