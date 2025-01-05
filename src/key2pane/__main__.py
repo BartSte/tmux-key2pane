@@ -3,6 +3,7 @@ import sys
 from argparse import Namespace
 from copy import copy
 from pprint import pformat
+from types import TracebackType
 
 from key2pane.cli import make_parser, set_logging
 from key2pane.settings import Settings, SettingsError, load_config
@@ -18,29 +19,29 @@ EXPECTED: dict[type[BaseException], str] = {
 }
 
 
-def main() -> int:
-    """Entry point for key2pane.
+def except_hook(
+    exc_type: type[BaseException], exc_value: BaseException, tb: TracebackType
+):
+    """Process exceptions.
 
-    It catches exceptions defined in this module and logs them as errors.
-    Unexpected exceptions are logged as critical and the traceback is included.
+    Expected exceptions are logged as errors. Unexpected exceptions are logged
+    as critical and the traceback is included.
 
     Returns:
         0 if successful, 1 if an error occurred.
     """
-    try:
-        _main()
-    except (SettingsError, TmuxError) as error:
-        logging.error(error)
-        return 1
-    except Exception as error:
-        logging.critical(error, exc_info=True)
-        return 1
+    if exc_type in EXPECTED:
+        logging.error("%s", EXPECTED[exc_type])
     else:
-        return 0
+        logging.critical(
+            "An unexpected error occurred.", exc_info=(exc_type, exc_value, tb)
+        )
+    return 1
 
 
-def _main():
+def main():
     """Entry point for key2pane."""
+    sys.excepthook = except_hook
     args: Namespace = make_parser().parse_args()
     set_logging(args.loglevel, args.logfile)
     logging.debug("Arguments:\n%s", pformat(vars(args)))
