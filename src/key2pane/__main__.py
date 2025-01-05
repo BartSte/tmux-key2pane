@@ -8,6 +8,15 @@ from key2pane.cli import make_parser, set_logging
 from key2pane.settings import Settings, SettingsError, load_config
 from key2pane.tmux import Pane, TmuxError
 
+EXPECTED: dict[type[BaseException], str] = {
+    SettingsError: "An error occurred while processing the settings.",
+    TmuxError: "An error occurred while interacting with tmux.",
+    KeyboardInterrupt: (
+        "The program was interrupted by the user. This may be due to improper "
+        "usage of the `--reset` option."
+    ),
+}
+
 
 def main() -> int:
     """Entry point for key2pane.
