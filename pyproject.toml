@@ -7,22 +7,19 @@ where = ["src"]
 include = ["key2pane"]
 
 [project]
-name = "key2pane"
 authors = [ {name = "BartSte"} ]
+classifiers = [ "Programming Language :: Python :: 3", ]
+dependencies = []
 description = "Send keys to any tmux pane"
-readme = "README.md"
-requires-python = ">=3.8"
 keywords = ["tmux", "key", "send", "pane", "keys", "send-keys", "send-keys-to-pane", "send-keys-to-pane"]
 license = {text = "MIT License"}
-classifiers = [
-    "Programming Language :: Python :: 3",
-]
-dependencies = []
+name = "key2pane"
+readme = "README.md"
+requires-python = ">=3.8"
 version = "0.0.1"
 
 [project.optional-dependencies]
-debug = ["ipdb", "ipython"]
-test = ["pytest"]
+dev = ["pytest", "ipdb", "ipython"]
 
 [project.scripts]
 key2pane = "key2pane.__main__:main"
@@ -42,8 +39,9 @@ venvPath = ".venv"
 
 reportMissingImports = true
 reportMissingTypeStubs = false
+reportUnusedCallResult = false
 
-pythonVersion = "3.11"
+pythonVersion = "3.13"
 pythonPlatform = "Linux"
 
 [tool.ruff]

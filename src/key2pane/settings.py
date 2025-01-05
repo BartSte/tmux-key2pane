@@ -10,7 +10,7 @@ class SettingsError(Exception):
     """Raised when an error occurs while handling settings."""
 
 
-def load_config(path: str) -> dict:
+def load_config(path: str) -> dict[str, str]:
     """Return the contents of a json file at `path` as a dictionary.
 
     Args:
@@ -136,8 +136,6 @@ class Settings:
             Settings object.
 
         """
-        # TODO: when the config sets the reset value to True, and it is not
-        # given by the cli. The cli sets it back to false....
         kwargs: dict[str, Any] = {
             key: value
             for dictionary in dicts

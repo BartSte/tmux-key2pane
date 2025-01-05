@@ -59,19 +59,29 @@ def make_settings(args: Namespace) -> Settings:
         the settings.
     """
     active_pane: Pane = Pane.from_active()
-    defaults: dict = copy(vars(args))
+    defaults: dict[str, str | int] = copy(vars(args))
     defaults.update(active_pane.as_dict())
 
-    config: dict = load_config(args.config)
+    config: dict[str, str | int] = load_config(args.config)
 
-    overrides: dict = dict(
-        session=args.session, window=args.window, index=args.index
+    overrides: dict[str, str | int] = dict(
+        session=args.session,
+        window=args.window,
+        index=args.index,
+        reset=args.reset,
     )
 
     settings: Settings = Settings.from_dicts(defaults, config, overrides)
     logging.debug(
-        "Active pane:\n%s\n\nDefaults:\n%s\n\nConfig:\n%s\n\nOverrides:\n%s"
-        "\n\nSettings:\n%s\n",
+        "\n".join(
+            [
+                "Active pane:\n%s",
+                "Defaults:\n%s",
+                "Config:\n%s",
+                "Overrides:\n%s",
+                "Settings:\n%s",
+            ]
+        ),
         active_pane,
         pformat(defaults),
         pformat(config),

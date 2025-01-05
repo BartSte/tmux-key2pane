@@ -80,8 +80,17 @@ def make_parser() -> ArgumentParser:
     )
     parser.add_argument(
         "--reset",
+        dest="reset",
         action="store_true",
+        default=None,
         help="Send a C-c before sending the keys",
+    )
+    parser.add_argument(
+        "--noreset",
+        dest="reset",
+        action="store_false",
+        default=None,
+        help="Do not send a C-c before sending the keys",
     )
     parser.add_argument(
         "--logfile",

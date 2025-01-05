@@ -1,13 +1,13 @@
 import logging
 import subprocess
-from typing import Generator
+from collections.abc import Generator
 
 
 class TmuxError(Exception):
     """Raised when a tmux command fails."""
 
 
-def execute(*args) -> str:
+def execute(*args: str) -> str:
     """Execute a tmux command and return the output.
 
     Args:
@@ -59,8 +59,10 @@ class Pane:
             "-F",
             "#{pane_index}:#{pane_current_command}",
         )
-        splitted: Generator = (line.split(":") for line in stdout.splitlines())
-        index_vs_commands: Generator = (
+        splitted: Generator[list[str], None, None] = (
+            line.split(":") for line in stdout.splitlines()
+        )
+        index_vs_commands: Generator[tuple[int, str], None, None] = (
             (
                 int(index),
                 command,
@@ -120,7 +122,7 @@ class Pane:
         cmd: tuple[str, ...] = ("send-keys", "-t", str(self))
         if reset:
             logging.debug("Resetting pane by sending C-c")
-            execute(*cmd, "C-c")
+            _ = execute(*cmd, "C-c")
 
         logging.info("Sent keys: %s", keys)
         return execute(*cmd, *keys)
