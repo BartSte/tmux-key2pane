@@ -59,7 +59,7 @@ Install `key2pane` using pip:
 pip install key2pane
 ```
 
-which panel will install the `key2pane` command.
+which will install the `key2pane` command.
 
 ## Usage
 
@@ -92,6 +92,33 @@ When we run the `key2pane foo bar` command, the following will happen:
 - The formatted keys are send to the pane, using `tmux send-keys`. After that,
   the `Enter` key is sent.
 - As a result, the command `echo 'foo bar'` is executed in the pane.
+
+Note that the following may occur, which is expected behavior but may cause some
+confusion:
+
+You run the following command from window 0, pane 0:
+
+```sh
+key2pane -w 0 -p 0 foo bar
+```
+
+The command is executed and send to the same tmux pane. Which is fine, but you
+might the following output:
+
+```sh
+ERROR:root:No action found for command python3
+```
+
+This is expected behavior because during the execution of the `key2pane` command
+the command is `python3`, and not your shell anymore. If you want the command of
+the pane to remain the shell, you can use:
+
+```sh
+key2pane -w 0 -p 0 --reset foo bar &
+```
+
+which will execute the command in a subshell, and thus not changing the command
+of the pane.
 
 ## Configuration
 
